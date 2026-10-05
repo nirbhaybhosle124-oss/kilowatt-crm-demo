@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kilowott Agency - WooCommerce CRM & Automation Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Kilowott Agency Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl gap-4">
+      <div>
+        <h1 class="text-2xl font-black tracking-wide text-slate-100 flex items-center gap-3">
+          <span class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-2 rounded-lg font-bold flex items-center justify-center w-10 h-10 shadow-lg">
+            <i class="fa-solid fa-layer-group text-lg"></i>
+          </span>
+          KILOWOTT <span class="text-blue-400 font-semibold text-lg">eCommerce CRM Hub</span>
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">Multi-Store WooCommerce Webhook Integration & Automation Portal</p>
+      </div>
+
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <select id="storeFilter" onchange="fetchData()" class="bg-slate-950 border border-slate-800 text-slate-200 text-sm rounded-lg p-2.5 focus:outline-none focus:border-blue-500">
+          <option value="ALL">All Client Stores</option>
+          <option value="Coffee Co. Store">Coffee Co. Store</option>
+          <option value="Luxury Lifestyle">Luxury Lifestyle</option>
+        </select>
+        <button onclick="openOrderModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 shadow-lg shadow-blue-500/10 transition-all text-sm whitespace-nowrap">
+          <i class="fa-solid fa-plus-circle"></i> + Webhook Order
+        </button>
+      </div>
+    </header>
+
+    <!-- Metrics Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Revenue</p>
+        <p id="kpi-revenue" class="text-2xl font-extrabold text-emerald-400 mt-1">$0.00</p>
+      </div>
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Orders</p>
+        <p id="kpi-orders" class="text-2xl font-extrabold text-blue-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Active Customers</p>
+        <p id="kpi-customers" class="text-2xl font-extrabold text-purple-400 mt-1">0</p>
+      </div>
+      <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Avg Order Value</p>
+        <p id="kpi-aov" class="text-2xl font-extrabold text-amber-400 mt-1">$0.00</p>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Customer Table -->
+      <div class="md:col-span-2 bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-users text-blue-400"></i> Customer Lifetime Value (LTV)
+          </h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="pb-3">Customer</th>
+                <th class="pb-3">Store</th>
+                <th class="pb-3">Status Tier</th>
+                <th class="pb-3">Total LTV</th>
+                <th class="pb-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customer-rows" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Activity Logs -->
+      <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-md flex flex-col">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-amber-400"></i> Kilowott Automation Log
+        </h2>
+        <div id="logs-container" class="space-y-3 max-h-[420px] overflow-y-auto pr-1"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Webhook Simulation Modal -->
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+        <i class="fa-brands fa-wordpress text-blue-400"></i> Simulate WooCommerce Webhook
+      </h3>
+      <div>
+        <label class="text-xs text-slate-400 font-medium">Select Store</label>
+        <select id="modalStore" class="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 text-sm focus:outline-none focus:border-blue-500">
+          <option value="Coffee Co. Store">Coffee Co. Store</option>
+          <option value="Luxury Lifestyle">Luxury Lifestyle</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-slate-400 font-medium">Customer Name</label>
+        <input type="text" id="custName" value="Daniel Boss" class="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 text-sm focus:outline-none focus:border-blue-500">
+      </div>
+      <div>
+        <label class="text-xs text-slate-400 font-medium">Customer Email</label>
+        <input type="email" id="custEmail" value="danielboss22@gmail.com" class="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 text-sm focus:outline-none focus:border-blue-500">
+      </div>
+      <div>
+        <label class="text-xs text-slate-400 font-medium">Order Amount ($)</label>
+        <input type="number" id="custAmount" value="120" class="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 text-sm focus:outline-none focus:border-blue-500">
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeOrderModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm text-slate-300">Cancel</button>
+        <button onclick="submitOrder()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg text-sm text-white">Trigger Webhook</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statusBadges = {
+      'Platinum': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+      'VIP': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+      'Active': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      'New': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    };
+
+    async function fetchData() {
+      const store = document.getElementById('storeFilter').value;
+      const custRes = await fetch(`/api/customers?store=${store}`);
+      const custData = await custRes.json();
+      const logRes = await fetch('/api/logs');
+      const logData = await logRes.json();
+
+      document.getElementById('kpi-revenue').innerText = `$${custData.metrics.totalRevenue.toFixed(2)}`;
+      document.getElementById('kpi-orders').innerText = custData.metrics.totalOrders;
+      document.getElementById('kpi-customers').innerText = custData.metrics.customerCount;
+      document.getElementById('kpi-aov').innerText = `$${custData.metrics.avgOrderValue.toFixed(2)}`;
+
+      document.getElementById('customer-rows').innerHTML = custData.customers.map(c => `
+        <tr class="hover:bg-slate-800/40 transition-colors">
+          <td class="py-3 font-semibold">
+            ${c.name}
+            <div class="text-xs text-slate-500 font-normal">${c.email}</div>
+          </td>
+          <td class="text-xs text-slate-400">${c.clientStore}</td>
+          <td>
+            <span class="text-xs px-2.5 py-1 rounded-full border ${statusBadges[c.status] || 'bg-slate-800 text-slate-300'} font-bold">
+              ${c.status}
+            </span>
+          </td>
+          <td class="font-bold text-emerald-400">$${c.totalSpent.toFixed(2)}</td>
+          <td class="text-right">
+            <button onclick="sendPromo('${c.email}')" class="text-xs bg-slate-800 hover:bg-blue-600 hover:text-white text-blue-400 font-semibold px-2.5 py-1 rounded transition-colors">
+              <i class="fa-solid fa-paper-plane mr-1"></i> Campaign
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('logs-container').innerHTML = logData.logs.map(l => `
+        <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800 text-xs shadow-sm">
+          <div class="flex justify-between items-center text-slate-400 mb-1">
+            <span class="font-mono text-blue-400">${l.timestamp}</span>
+            <span class="uppercase font-bold text-[10px] text-purple-400">${l.type}</span>
+          </div>
+          <p class="text-slate-300">${l.message}</p>
+        </div>
+      `).join('');
+    }
+
+    function openOrderModal() { document.getElementById('orderModal').classList.remove('hidden'); }
+    function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
+
+    async function submitOrder() {
+      const store = document.getElementById('modalStore').value;
+      const name = document.getElementById('custName').value;
+      const email = document.getElementById('custEmail').value;
+      const amount = document.getElementById('custAmount').value;
+
+      await fetch('/api/woocommerce/webhook/order-created', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ store, name, email, amount })
+      });
+
+      closeOrderModal();
+      fetchData();
+    }
+
+    async function sendPromo(email) {
+      await fetch('/api/action/send-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      fetchData();
+    }
+
+    fetchData();
+    setInterval(fetchData, 4000);
+  </script>
+</body>
+</html>
