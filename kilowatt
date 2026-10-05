@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WooCommerce CRM Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-6">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Header -->
+    <header class="flex justify-between items-center bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center gap-3">
+          <i class="fa-brands fa-wordpress text-blue-400 text-3xl"></i>
+          WooCommerce CRM Dashboard
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">Real-time Customer Data, Order Tracking & Communication Workflows</p>
+      </div>
+      <button onclick="simulateOrder()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/40">
+        <i class="fa-solid fa-plus"></i> Simulate New WooCommerce Order
+      </button>
+    </header>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <p class="text-slate-400 text-sm font-medium">Total Customers</p>
+        <p class="text-3xl font-extrabold mt-2 text-white" id="stat-customers">1,248</p>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <p class="text-slate-400 text-sm font-medium">Active Orders</p>
+        <p class="text-3xl font-extrabold mt-2 text-amber-400" id="stat-orders">42</p>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <p class="text-slate-400 text-sm font-medium">Total Revenue</p>
+        <p class="text-3xl font-extrabold mt-2 text-emerald-400" id="stat-revenue">$48,290</p>
+      </div>
+      <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+        <p class="text-slate-400 text-sm font-medium">Automations Triggered</p>
+        <p class="text-3xl font-extrabold mt-2 text-purple-400" id="stat-automations">389</p>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Customer Data & Order Table -->
+      <div class="lg:col-span-2 bg-slate-800 rounded-xl border border-slate-700 p-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-users text-blue-400"></i> Customer Directory & Orders
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="border-b border-slate-700 text-slate-400">
+                <th class="pb-3">Customer</th>
+                <th class="pb-3">Status</th>
+                <th class="pb-3">Order ID</th>
+                <th class="pb-3">Spent</th>
+                <th class="pb-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="customer-table-body" class="divide-y divide-slate-700">
+              <tr>
+                <td class="py-3 font-semibold">Sarah Jenkins<br><span class="text-xs text-slate-400 font-normal">sarah@example.com</span></td>
+                <td><span class="bg-emerald-500/20 text-emerald-300 text-xs px-2.5 py-1 rounded-full font-medium">Processing</span></td>
+                <td>#WC-9082</td>
+                <td class="font-bold text-slate-200">$240.00</td>
+                <td><button onclick="triggerWorkflow('Sarah Jenkins', 'VIP Thank You Email')" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-1.5 rounded text-white font-medium">Trigger Email</button></td>
+              </tr>
+              <tr>
+                <td class="py-3 font-semibold">Alex Rivera<br><span class="text-xs text-slate-400 font-normal">alex@example.com</span></td>
+                <td><span class="bg-blue-500/20 text-blue-300 text-xs px-2.5 py-1 rounded-full font-medium">Completed</span></td>
+                <td>#WC-9081</td>
+                <td class="font-bold text-slate-200">$115.50</td>
+                <td><button onclick="triggerWorkflow('Alex Rivera', 'Feedback Request')" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-1.5 rounded text-white font-medium">Trigger Email</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live Communication Workflows Log -->
+      <div class="bg-slate-800 rounded-xl border border-slate-700 p-6 flex flex-col justify-between">
+        <div>
+          <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-bolt text-amber-400"></i> Communication Workflows
+          </h2>
+          <div id="workflow-logs" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+            <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 text-xs">
+              <span class="text-purple-400 font-semibold">[AUTO] Welcome Sequence</span>
+              <p class="text-slate-300 mt-1">Sent onboarding email to new WooCommerce registrant.</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-700 text-xs text-slate-400">
+          <i class="fa-solid fa-circle text-emerald-500 animate-pulse mr-1"></i> Webhook listener active for WooCommerce events.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let customers = 1248;
+    let orders = 42;
+    let revenue = 48290;
+    let automations = 389;
+
+    function triggerWorkflow(name, type) {
+      automations++;
+      document.getElementById('stat-automations').innerText = automations;
+      
+      const logBox = document.getElementById('workflow-logs');
+      const newLog = document.createElement('div');
+      newLog.className = "bg-slate-900/60 p-3 rounded-lg border border-purple-500/30 text-xs animate-fade-in";
+      newLog.innerHTML = `<span class="text-purple-400 font-semibold">[MANUAL TRIGGER] ${type}</span>
+                          <p class="text-slate-300 mt-1">Notification sent successfully to <strong>${name}</strong>.</p>`;
+      logBox.prepend(newLog);
+    }
+
+    function simulateOrder() {
+      customers++;
+      orders++;
+      revenue += 185;
+      automations++;
+
+      document.getElementById('stat-customers').innerText = customers.toLocaleString();
+      document.getElementById('stat-orders').innerText = orders;
+      document.getElementById('stat-revenue').innerText = '$' + revenue.toLocaleString();
+      document.getElementById('stat-automations').innerText = automations;
+
+      const randomNames = ["David Miller", "Elena Rostova", "Marcus Chen", "Priya Patel"];
+      const chosenName = randomNames[Math.floor(Math.random() * randomNames.length)];
+      const orderId = '#WC-' + Math.floor(1000 + Math.random() * 9000);
+
+      const tableBody = document.getElementById('customer-table-body');
+      const newRow = document.createElement('tr');
+      newRow.className = "bg-emerald-950/30 transition-all";
+      newRow.innerHTML = `
+        <td class="py-3 font-semibold">${chosenName}<br><span class="text-xs text-slate-400 font-normal">${chosenName.toLowerCase().replace(' ', '')}@example.com</span></td>
+        <td><span class="bg-amber-500/20 text-amber-300 text-xs px-2.5 py-1 rounded-full font-medium">New Webhook Order</span></td>
+        <td>${orderId}</td>
+        <td class="font-bold text-slate-200">$185.00</td>
+        <td><button onclick="triggerWorkflow('${chosenName}', 'Order Confirmation')" class="bg-indigo-600 hover:bg-indigo-500 text-xs px-3 py-1.5 rounded text-white font-medium">Trigger Email</button></td>
+      `;
+      tableBody.prepend(newRow);
+
+      triggerWorkflow(chosenName, 'New WooCommerce Order Trigger');
+    }
+  </script>
+</body>
+</html>
